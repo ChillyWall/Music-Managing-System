@@ -241,3 +241,22 @@ int search_by_artist(const char* artist, pdb db, SongArray* song_arr) {
 void destruct_song_array(SongArray* itms) {
     free(itms->data);
 }
+
+int print_song_info(Song* song) {
+    printf("ID: %lu, Title: %s, Artist: %s\n", song->id, song->title,
+           song->artist);
+    return 0;
+}
+
+int print_song_array(SongArray* song_arr) {
+    for (size_t i = 0; i < song_arr->size; ++i) {
+        print_song_info(song_arr->data + i);
+    }
+    return 0;
+}
+
+int print_artist_info(Artist* artist) {
+    printf("ID: %lu, Name: %s, Gender: %s\n", artist->id, artist->name,
+           artist->gender);
+    return 0;
+}

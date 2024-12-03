@@ -47,4 +47,13 @@ int search_by_artist(const char* artist, pdb db, SongArray* song_arr);
 /* 销毁SongArray对象，释放其中数组的内存 */
 void destruct_song_array(SongArray* itms);
 
+/* 打印歌曲信息 */
+int print_song_info(Song* song);
+
+/* 打印歌曲数组 */
+int print_song_array(SongArray* song_arr);
+
+/* 打印歌手信息 */
+int print_artist_info(Artist* artist);
+
 #endif // !UTILS_H
