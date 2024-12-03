@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <types.h>
 
 pdb connect_db() {
@@ -21,7 +22,7 @@ int create_tables(pdb db) {
     // 创建表songs
     int rc = sqlite3_exec(db,
                           "CREATE TABLE IF NOT EXISTS songs (id INTEGER "
-                          "PRIMARY KEY AUTOINCREMENT, title "
+                          "PRIMARY KEY AUTOINCREMENT UNIQUE, title "
                           "TEXT, artist TEXT);",
                           NULL, NULL, &errmsg);
     if (rc != SQLITE_OK) {
@@ -33,8 +34,8 @@ int create_tables(pdb db) {
     // 创建表artists
     rc = sqlite3_exec(db,
                       "CREATE TABLE IF NOT EXISTS artists (id INTEGER PRIMARY "
-                      "KEY AUTOINCREMENT, name "
-                      "TEXT, gender TEXT);",
+                      "KEY AUTOINCREMENT UNIQUE, name "
+                      "TEXT UNIQUE, gender TEXT);",
                       NULL, NULL, &errmsg);
     if (rc != SQLITE_OK) {
         fprintf(stderr, "Failed to create table artists: %s\n", errmsg);
@@ -45,7 +46,7 @@ int create_tables(pdb db) {
     return 0;
 }
 
-int add_song(const char* title, const char* artist, const char* album, pdb db) {
+int add_song(const char* title, const char* artist, pdb db) {
     // 准备搜索语句
     char* sql = "SELECT * FROM songs WHERE title = ?";
     pstmt stmt = NULL;
@@ -54,6 +55,13 @@ int add_song(const char* title, const char* artist, const char* album, pdb db) {
     // 搜索
     int rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
+    while (rc == SQLITE_ROW) { // 搜索成功且同名歌曲已经在数据库中
+        if (strcmp((const char*) sqlite3_column_text(stmt, 2), artist) == 0) {
+            // 相同歌曲已经在数据库中
+            return 0;
+        }
+        rc = sqlite3_step(stmt);
+    }
     if (rc == SQLITE_DONE) { // 搜索成功且该歌曲不在数据库中
         // 准备语句
         char* sql = "INSERT INTO songs (title, artist) VALUES (?, ?);";

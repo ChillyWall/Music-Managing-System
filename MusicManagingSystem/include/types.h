@@ -8,14 +8,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* 歌曲类型 */
+/* 歌曲类型
+ * 歌曲名允许重名，不同歌手的同名歌曲视为两首歌曲*/
 typedef struct {
     uint64_t id;
     const char* title;  // 歌曲标题
     const char* artist; // 歌手名字
 } Song;
 
-/* 歌曲数组 */
+/* 歌曲数组
+ * 歌手不允许同名 */
 typedef struct {
     Song* data;  // 数组
     size_t size; // 长度

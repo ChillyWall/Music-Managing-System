@@ -18,7 +18,7 @@ int create_tables(pdb db);
 
 /* 向数据库中添加一首歌曲
  * 返回0则添加完成，返回其他值则表示添加失败或已添加 */
-int add_song(const char* title, const char* artist, const char* album, pdb db);
+int add_song(const char* title, const char* artist, pdb db);
 
 /* 从数据库中删除一首歌曲
  * 返回0则删除完成，其他值则删除失败 */
