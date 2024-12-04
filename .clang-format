@@ -105,7 +105,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 
 # Aligns pointers to the left.
-PointerAlignment: Left
+PointerAlignment: Right
 
 # Reflows comments.
 ReflowComments: true
@@ -156,7 +156,7 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
 # Sets the language standard to C++23.
-Standard: c++17
+Standard: Auto
 
 # Sets the number of spaces in a tab.
 TabWidth: 4

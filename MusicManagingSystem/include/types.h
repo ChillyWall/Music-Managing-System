@@ -9,26 +9,21 @@
 #include <stdint.h>
 
 /* 歌曲类型
- * 歌曲名允许重名，不同歌手的同名歌曲视为两首歌曲*/
+ * 歌曲名允许重名，同名专辑的同名歌曲视为同一首歌 */
 typedef struct {
-    uint64_t id;
-    const char* title;  // 歌曲标题
-    const char* artist; // 歌手名字
+    const char *title;    // 歌曲标题
+    const char *album;    // 专辑名
+    const char *singer;   // 歌手名字
+    const char *lyricist; // 作词者
+    const char *composer; // 作曲者
+    const char *arranger; // 编曲者
 } Song;
 
 /* 歌曲数组
  * 歌手不允许同名 */
 typedef struct {
-    Song* data;  // 数组
+    Song *data;  // 数组
     size_t size; // 长度
 } SongArray;
-
-/* 歌手类型 */
-typedef struct {
-    uint64_t id;
-    const char* name;   // 姓名
-    const char* gender; // 性别
-    SongArray songs;    // 歌曲作品
-} Artist;
 
 #endif // !TYPES_H

@@ -18,7 +18,7 @@ pdb connect_db() {
 }
 
 int create_tables(pdb db) {
-    char* errmsg = NULL; // 错误信息
+    char *errmsg = NULL; // 错误信息
     // 创建表songs
     int rc = sqlite3_exec(db,
                           "CREATE TABLE IF NOT EXISTS songs (id INTEGER "
@@ -28,235 +28,207 @@ int create_tables(pdb db) {
     if (rc != SQLITE_OK) {
         fprintf(stderr, "Failed to create table songs: %s\n", errmsg);
         sqlite3_free(errmsg);
-        return 1;
+        return -1;
     }
-
-    // 创建表artists
-    rc = sqlite3_exec(db,
-                      "CREATE TABLE IF NOT EXISTS artists (id INTEGER PRIMARY "
-                      "KEY AUTOINCREMENT UNIQUE, name "
-                      "TEXT UNIQUE, gender TEXT);",
-                      NULL, NULL, &errmsg);
-    if (rc != SQLITE_OK) {
-        fprintf(stderr, "Failed to create table artists: %s\n", errmsg);
-        sqlite3_free(errmsg);
-        return 1;
-    }
-
     return 0;
 }
 
-int add_song(const char* title, const char* artist, pdb db) {
-    // 准备搜索语句
-    char* sql = "SELECT * FROM songs WHERE title = ?";
+int add_song(Song *song, pdb db) {
+    Song tmp;
+    int rc = search(db, &tmp, song->title, song->album);
     pstmt stmt = NULL;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_text(stmt, 1, title, 0, SQLITE_TRANSIENT);
-    // 搜索
-    int rc = sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-    while (rc == SQLITE_ROW) { // 搜索成功且同名歌曲已经在数据库中
-        if (strcmp((const char*) sqlite3_column_text(stmt, 2), artist) == 0) {
-            // 相同歌曲已经在数据库中
-            return 0;
-        }
-        rc = sqlite3_step(stmt);
-    }
-    if (rc == SQLITE_DONE) { // 搜索成功且该歌曲不在数据库中
-        // 准备语句
-        char* sql = "INSERT INTO songs (title, artist) VALUES (?, ?);";
-        stmt = NULL;
+    if (rc == 1) { // 搜索成功且该歌曲不在数据库中
+        // 插入数据
+        char sql[] =
+            "INSERT INTO songs (title, album, singer, lyricist, composer, "
+            "arranger) VALUES (?, ?, ?, ?, ?, ?);";
         sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-        sqlite3_bind_text(stmt, 1, title, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, artist, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 1, song->title, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, song->album, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, song->singer, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 4, song->lyricist, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 5, song->composer, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 6, song->arranger, -1, SQLITE_TRANSIENT);
         // 执行插入
         rc = sqlite3_step(stmt);
         sqlite3_finalize(stmt);
 
         if (rc != SQLITE_DONE) { // 插入失败
-            fprintf(stderr, "Error while inserting: %d\n", rc);
-            return 2;
+            fprintf(stderr, "Error while inserting the song: %d\n", rc);
+            return -2;
         }
-    } else if (rc != SQLITE_ROW) { // 搜索失败
-        fprintf(stderr, "Error while searching for the song %s: %d", title, rc);
-        return 1;
-    }
-    return 0;
-}
+        return 0;
+    } else if (rc == 0) { // 搜索成功且该歌曲已在数据库中
+        // 更新数据
+        char sql[] =
+            "UPDATE songs SET singer = ?, lyricist = ?, composer = ?, "
+            "arranger = ? WHERE title = ? AND album = ?;";
+        sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+        sqlite3_bind_text(stmt, 1, song->singer, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, song->lyricist, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, song->composer, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 4, song->arranger, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 5, song->title, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 6, song->album, -1, SQLITE_TRANSIENT);
 
-int delete_song(const char* title, pdb db) {
-    // 准备语句
-    char* sql = "DELETE FROM songs WHERE title = ?;";
-    pstmt stmt = NULL;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-    sqlite3_bind_text(stmt, 1, title, 0, SQLITE_TRANSIENT);
-    // 执行删除操作
-    int rc = sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-    if (rc != SQLITE_DONE) { // 删除失败
-        fprintf(stderr, "Failed to delete the song %s: %d\n", title, rc);
-        return 2;
-    }
-    return 0;
-}
-
-int add_artist(const char* name, const char* gender, pdb db) {
-    // 准备语句
-    char* sql = "SELECT * FROM artists WHERE name = ?;";
-    pstmt stmt = NULL;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-    sqlite3_bind_text(stmt, 1, name, 0, SQLITE_TRANSIENT);
-    // 执行搜索
-    int rc = sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-    if (rc == SQLITE_DONE) { // 搜索成功且歌手不在数据库中
-        // 准备语句
-        char* sql = "INSERT INTO artists (name, gender) VALUES (?, ?);";
-        stmt = NULL;
-        rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-        sqlite3_bind_text(stmt, 1, name, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, gender, -1, SQLITE_TRANSIENT);
-        // 执行插入操作
+        // 执行插入
         rc = sqlite3_step(stmt);
         sqlite3_finalize(stmt);
-        if (rc != SQLITE_DONE) { // 插入失败
-            fprintf(stderr, "Error while inserting: %d\n", rc);
-            return 2;
+
+        if (rc != SQLITE_DONE) { // 更新失败
+            fprintf(stderr, "Error while inserting the song: %d\n", rc);
+            return -3;
         }
-    } else if (rc != SQLITE_ROW) { // 搜索失败
-        fprintf(stderr, "Failed to search the song before inserting: %d\n", rc);
+
         return 1;
+    } else { // 搜索失败
+        fprintf(stderr, "Error while searching for the song: %d", rc);
+        return -1;
     }
-    return 0;
 }
 
-int delete_artist(const char* name, pdb db) {
+int delete_song(Song *song, pdb db) {
     // 准备语句
-    char* sql = "DELETE FROM artists WHERE name = ?;";
+    char sql[] = "DELETE FROM songs WHERE title = ? AND album = ?;";
     pstmt stmt = NULL;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_text(stmt, 1, name, 0, SQLITE_TRANSIENT);
+    sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    sqlite3_bind_text(stmt, 1, song->title, 0, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, song->album, 0, SQLITE_TRANSIENT);
     // 执行删除操作
     int rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     if (rc != SQLITE_DONE) { // 删除失败
-        fprintf(stderr, "Failed to delete the artist %s: %d.\n", name, rc);
-        return 1;
+        fprintf(stderr, "Failed to delete the song: %d\n", rc);
+        return -1;
     }
     return 0;
 }
 
-int delete_by_artist(const char* name, pdb db) {
-    // 先删除歌手
-    int rc = delete_artist(name, db);
-    if (rc != 0) {
-        return rc;
-    }
-
-    // 准备语句
-    char* sql = "DELETE FROM songs WHERE artist = ?;";
-    pstmt stmt = NULL;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_text(stmt, 1, name, 0, SQLITE_TRANSIENT);
-    // 执行删除操作
-    rc = sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-    if (rc != SQLITE_DONE) { // 删除失败
-        fprintf(stderr, "Failed to delete the songs: %d.\n", rc);
-        return 1;
-    }
-    return 0;
-}
-
-int search_by_title(const char* title, pdb db, Song* song) {
-    // 准备语句
-    char* sql = "SELECT * FROM songs WHERE title = ?;";
+int search(pdb db, Song *song, const char *title, const char *album) {
+    // 准备搜索语句
+    char sql[] = "SELECT * FROM songs WHERE title = ? AND album = ?";
     pstmt stmt = NULL;
     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     sqlite3_bind_text(stmt, 1, title, 0, SQLITE_TRANSIENT);
-    // 执行搜索
+    sqlite3_bind_text(stmt, 2, album, 0, SQLITE_TRANSIENT);
+    // 搜索
     int rc = sqlite3_step(stmt);
-    if (rc == SQLITE_ROW) { // 搜索成功且查找到结果
-        // 填充数据
-        song->id = (uint64_t) sqlite3_column_int64(stmt, 0);
+    if (rc == SQLITE_ROW) { // 搜索成功且找到结果
         song->title = title;
-        song->artist = (const char*) sqlite3_column_text(stmt, 2);
-    } else if (rc == SQLITE_DONE) { // 未找到结果
-        // 不做任何处理
-        return 1;
+        song->album = album;
+        song->singer = (const char *) sqlite3_column_text(stmt, 3);
+        song->lyricist = (const char *) sqlite3_column_text(stmt, 4);
+        song->composer = (const char *) sqlite3_column_text(stmt, 5);
+        song->arranger = (const char *) sqlite3_column_text(stmt, 6);
+        rc = 0;
+    } else if (rc == SQLITE_DONE) { // 搜索成功但未找到结果
+        rc = 1;
     } else { // 搜索失败
         fprintf(stderr, "Failed to search for song.\n");
-        return 2;
+        rc = -1;
     }
-    // 释放资源
     sqlite3_finalize(stmt);
-    return 0;
+    return rc;
 }
 
-int search_by_artist(const char* artist, pdb db, SongArray* song_arr) {
-    // 先搜索确定结果个数
-    size_t size;
-    // 准备语句
-    char* sql = "SELECT COUNT(*) FROM songs WHERE artist = ?;";
-    pstmt stmt = NULL;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_text(stmt, 1, artist, 0, SQLITE_TRANSIENT);
-    // 执行搜索
-    int rc = sqlite3_step(stmt);
-    if (rc == SQLITE_ROW) { // 搜索成功
-        // 读取统计结果
-        size = sqlite3_column_int(stmt, 0);
-        if (size == 0) { // 箬没有符合条件的结果直接退出，返回值1
-            return 1;
+int filter(pdb db, SongArray *arr, const char **args) {
+    // 列名
+    const char *columns[6] = {"title",    "album",    "singer",
+                              "lyricist", "composer", "arranger"};
+    // 条件对应列索引
+    int i_cols[6];
+    // 条件数量
+    int cols = 0;
+    // 记录条件对应列索引
+    for (int i = 0; i < 6; ++i) {
+        if (args[i] != NULL) {
+            i_cols[cols++] = i;
         }
-    } else { // 搜索失败
-        fprintf(stderr, "Failed to search for songs.\n");
-        return 2;
+    }
+
+    // 条件部分sql表达式
+    char conditions[600] = "";
+    if (cols > 0) { // 条件数不为0
+        // 拼接条件语句, 每条语句长度限制为100个字符
+        char buf[100];
+        sprintf(buf, "WHERE %s = %s", columns[i_cols[0]], args[i_cols[0]]);
+        strncat(conditions, buf, 100);
+        for (int i = 1; i < cols; ++i) {
+            sprintf(buf, "AND %s = %s", columns[i_cols[i]], args[i_cols[i]]);
+            strncat(conditions, buf, 100);
+        }
+    }
+
+    // 先查询符合条件的歌曲数量
+    char sql1[630] = "SELECT COUNT(*) FROM songs ";
+    strncat(sql1, conditions, 600);
+    pstmt stmt = NULL;
+    sqlite3_prepare_v2(db, sql1, -1, &stmt, NULL);
+    int rc = sqlite3_step(stmt);
+    size_t size;
+    if (rc != SQLITE_ROW) { // 查询失败
+        fprintf(stderr, "Failed to count the number of songs.\n");
+        sqlite3_finalize(stmt);
+        return -1;
+    } else { // 查询成功
+        size = sqlite3_column_int(stmt, 0);
     }
     sqlite3_finalize(stmt);
-    song_arr->size = size;
 
-    // 动态分配内存以保存结果
-    song_arr->data = (Song*) malloc(size * sizeof(Song));
-    // 准备语句
-    sql = "SELECT * FROM songs WHERE artist = ?";
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_text(stmt, 1, artist, 0, SQLITE_TRANSIENT);
-    Song* ptr = song_arr->data;
-    // 执行搜索
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) { // 搜索到结果
-        ptr->id = sqlite3_column_int64(stmt, 0);
-        ptr->title = (const char*) sqlite3_column_text(stmt, 1);
-        ptr->artist = artist;
-        ++ptr;
+    // 若没有符合条件的歌曲
+    if (size == 0) {
+        arr->size = 0;
+        arr->data = NULL;
+        return 0;
     }
-    if (rc != SQLITE_DONE) {
-        fprintf(stderr, "Error while searching for songs.\n");
-        return 2;
+
+    // 按照歌曲数量分配内存
+    arr->data = malloc(size * sizeof(Song));
+
+    // 逐个查询符合条件的歌曲
+    char sql2[630] = "SELECT * FROM songs ";
+    strncat(sql2, conditions, 600);
+    sqlite3_prepare_v2(db, sql2, -1, &stmt, NULL);
+    Song *song = arr->data;
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        // 填充歌曲信息
+        song->title = (const char *) sqlite3_column_text(stmt, 1);
+        song->album = (const char *) sqlite3_column_text(stmt, 2);
+        song->singer = (const char *) sqlite3_column_text(stmt, 3);
+        song->lyricist = (const char *) sqlite3_column_text(stmt, 4);
+        song->composer = (const char *) sqlite3_column_text(stmt, 5);
+        song->arranger = (const char *) sqlite3_column_text(stmt, 6);
+        ++song;
     }
+    if (rc != SQLITE_DONE) { // 非正常结束
+        fprintf(stderr, "Failed to search for songs.\n");
+        free(arr->data);
+        arr->data = NULL;
+        arr->size = 0;
+        sqlite3_finalize(stmt);
+        return -2;
+    }
+    arr->size = size;
     sqlite3_finalize(stmt);
     return 0;
 }
 
-void destruct_song_array(SongArray* itms) {
+void destruct_song_array(SongArray *itms) {
     free(itms->data);
 }
 
-int print_song_info(Song* song) {
-    printf("ID: %lu, Title: %s, Artist: %s\n", song->id, song->title,
-           song->artist);
+int print_song_info(Song *song) {
+    printf(
+        "Title: %s, Album: %s, Singer: %s, Lyricist: %s, Composer: %s, "
+        "Arranger: %s\n",
+        song->title, song->album, song->singer, song->lyricist, song->composer,
+        song->arranger);
     return 0;
 }
 
-int print_song_array(SongArray* song_arr) {
+int print_song_array(SongArray *song_arr) {
     for (size_t i = 0; i < song_arr->size; ++i) {
         print_song_info(song_arr->data + i);
     }
-    return 0;
-}
-
-int print_artist_info(Artist* artist) {
-    printf("ID: %lu, Name: %s, Gender: %s\n", artist->id, artist->name,
-           artist->gender);
     return 0;
 }
