@@ -1,5 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef MMS_UTILS_H
+#define MMS_UTILS_H
 
 #include "types.h"
 #include <sqlite3.h>
@@ -23,6 +23,10 @@ int add_song(pdb db, Song *song);
 /* 从数据库中删除一首歌曲
  * 返回0则删除完成，其他值则删除失败 */
 int delete_song(pdb db, const char *title, const char *album);
+
+/* 删除歌曲数组中的所有歌曲
+ * 该函数并不会释放arr的资源 */
+int delete_songs(pdb db, SongArray *arr);
 
 /* 搜索特定歌曲
  * 返回0则表示查找成功，1表示不存在，其他表示出错

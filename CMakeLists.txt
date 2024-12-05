@@ -9,3 +9,4 @@ enable_testing()
 
 add_subdirectory(MusicManagingSystem)
 add_subdirectory(tests)
+add_subdirectory(ui)

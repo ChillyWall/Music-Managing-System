@@ -113,6 +113,22 @@ int delete_song(pdb db, const char *title, const char *album) {
     return 0;
 }
 
+int delete_songs(pdb db, SongArray *arr) {
+    Song *song;
+    int rc;
+    int res = 0;
+    for (size_t i = 0; i < arr->size; i++) {
+        song = arr->data + i;
+        rc = delete_song(db, song->title, song->album);
+        if (rc != 0) {
+            fprintf(stderr, "The song %s - %s is not deleted", song->title,
+                    song->album);
+            res = -1;
+        }
+    }
+    return res;
+}
+
 int search(pdb db, Song *song, const char *title, const char *album) {
     // 准备搜索语句
     const char *sql = "SELECT * FROM songs WHERE title = ? AND album = ?;";

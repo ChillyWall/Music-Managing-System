@@ -97,6 +97,8 @@ void test_filter(pdb db) {
     filter(db, &arr,
            (const char *[]) {NULL, NULL, NULL, "lyricist1", "composer1", NULL});
     print_song_array(&arr);
+    printf("Delete these songs.\n");
+    delete_songs(db, &arr);
     destruct_song_array(&arr);
 
     filter(db, &arr, (const char *[]) {NULL, NULL, NULL, NULL, NULL, NULL});
