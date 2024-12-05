@@ -11,12 +11,12 @@
 /* 歌曲类型
  * 歌曲名允许重名，同名专辑的同名歌曲视为同一首歌 */
 typedef struct {
-    const char *title;    // 歌曲标题
-    const char *album;    // 专辑名
-    const char *singer;   // 歌手名字
-    const char *lyricist; // 作词者
-    const char *composer; // 作曲者
-    const char *arranger; // 编曲者
+    char *title;    // 歌曲标题
+    char *album;    // 专辑名
+    char *singer;   // 歌手名字
+    char *lyricist; // 作词者
+    char *composer; // 作曲者
+    char *arranger; // 编曲者
 } Song;
 
 /* 歌曲数组
