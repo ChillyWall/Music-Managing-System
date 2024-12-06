@@ -1,0 +1,174 @@
+# .clang-format
+# Sets the style to LLVM, which is a common coding style used in the LLVM project.
+BasedOnStyle: LLVM
+
+# Sets the number of spaces to offset access modifiers like 'public:', 'private:', etc.
+AccessModifierOffset: -4
+
+# Aligns the code after an open bracket ('[' or '(').
+AlignAfterOpenBracket: Align
+
+# If set to true, consecutive assignments will be aligned.
+AlignConsecutiveAssignments: None
+
+# If set to true, consecutive variable declarations will be aligned.
+AlignConsecutiveDeclarations: None
+
+# Aligns escaped newlines to the left.
+AlignEscapedNewlines: Left
+
+# Aligns operands of binary and ternary expressions.
+AlignOperands: DontAlign
+
+# Aligns trailing comments.
+AlignTrailingComments: true
+
+# Allows all parameters of a function declaration to be placed on the next line if there isn't enough room on the first line.
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# If set to true, short blocks can be placed on a single line.
+AllowShortBlocksOnASingleLine: Empty
+
+# If set to true, short case labels can be placed on a single line.
+AllowShortCaseLabelsOnASingleLine: false
+
+# Allows short functions to be placed on a single line. The value 'All' means all functions are considered.
+AllowShortFunctionsOnASingleLine: Empty
+
+# If set to true, short 'if' statements can be placed on a single line.
+AllowShortIfStatementsOnASingleLine: Never
+
+# If set to true, short loops ('for', 'while', 'do') can be placed on a single line.
+AllowShortLoopsOnASingleLine: false
+
+# Determines where to break after the return type in a function definition.
+AlwaysBreakAfterDefinitionReturnType: None
+
+# Determines where to break after the return type in a function declaration.
+AlwaysBreakAfterReturnType: None
+
+# If set to true, breaks before multiline string literals.
+AlwaysBreakBeforeMultilineStrings: true
+
+# Breaks template declarations after the template parameter list.
+AlwaysBreakTemplateDeclarations: Yes
+
+# Packs arguments on the same line, unless it exceeds the column limit.
+BinPackArguments: true
+
+# Packs parameters on the same line, unless it exceeds the column limit.
+BinPackParameters: true
+
+# Attaches opening braces to the previous line.
+BreakBeforeBraces: Attach
+
+# Preserves the order of include blocks.
+IncludeBlocks: Preserve
+
+# Sets the maximum number of characters in a line.
+ColumnLimit: 80
+
+# If set to true, compacts namespace definitions.
+CompactNamespaces: false
+
+# Controls how constructor initializers are formatted.
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# Sets the number of spaces to use for indentation in Objective-C blocks.
+ObjCBlockIndentWidth: 4
+
+# If set to true, adds a space after the '@property' keyword in Objective-C.
+ObjCSpaceAfterProperty: true
+
+# If set to true, adds a space before the protocol list in Objective-C.
+ObjCSpaceBeforeProtocolList: true
+
+# Sets the penalty for breaking an assignment.
+PenaltyBreakAssignment: 2
+
+# Sets the penalty for breaking before the first call parameter.
+PenaltyBreakBeforeFirstCallParameter: 19
+
+# Sets the penalty for breaking a comment.
+PenaltyBreakComment: 300
+
+# Sets the penalty for breaking before the first '<<' in a stream.
+PenaltyBreakFirstLessLess: 120
+
+# Sets the penalty for breaking a string literal.
+PenaltyBreakString: 1000
+
+# Sets the penalty for exceeding the column limit.
+PenaltyExcessCharacter: 1000000
+
+# Sets the penalty for putting the return type on its own line.
+PenaltyReturnTypeOnItsOwnLine: 60
+
+# Aligns pointers to the left.
+PointerAlignment: Right
+
+# Reflows comments.
+ReflowComments: true
+
+# Sorts includes.
+SortIncludes: CaseInsensitive
+
+# Sorts using declarations.
+SortUsingDeclarations: true
+
+# If set to true, adds a space after C-style casts.
+SpaceAfterCStyleCast: true
+
+# If set to true, adds a space after the logical not ('!') operator.
+SpaceAfterLogicalNot: false
+
+# If set to true, adds a space after the 'template' keyword.
+SpaceAfterTemplateKeyword: true
+
+# If set to true, adds a space before assignment operators.
+SpaceBeforeAssignmentOperators: true
+
+# If set to true, adds a space before C++11 braced lists.
+SpaceBeforeCpp11BracedList: true
+
+# Sets when to add a space before parentheses.
+SpaceBeforeParens: ControlStatements
+
+# If set to true, adds a space before the colon in range-based for loops.
+SpaceBeforeRangeBasedForLoopColon: true
+
+# If set to true, adds a space inside empty parentheses.
+SpaceInEmptyParentheses: false
+
+# If set to true, adds spaces inside template angle brackets ('< >').
+SpacesInAngles: Never
+
+# If set to true, adds spaces inside C-style cast parentheses.
+SpacesInCStyleCastParentheses: false
+
+# If set to true, adds spaces inside container literals.
+SpacesInContainerLiterals: true
+
+# If set to true, adds spaces inside parentheses.
+SpacesInParentheses: false
+
+# If set to true, adds spaces inside square brackets.
+SpacesInSquareBrackets: false
+
+# Sets the language standard to C++23.
+Standard: Auto
+
+# Sets the number of spaces in a tab.
+TabWidth: 4
+
+# Sets indentation width
+IndentWidth: 4
+
+# Sets indentation of namespace
+NamespaceIndentation: None
+
+# Sets indent width for continuing statements
+ContinuationIndentWidth: 4
+
+# Sets when to use tabs for indentation.
+UseTab: Never
