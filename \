@@ -241,19 +241,18 @@ int menu_filter_operation(pdb db) {
     for (int i = 0; i < 6; ++i) {
         printf("请输入%s: ", columns_zh[i]);
         getline(args + i, &len, stdin);
-        _remove_newline(args[i]);
-        len = strlen(args[i]);
         if (len == 0) {
             free(args[i]);
             args[i] = NULL;
+        } else {
+            _remove_newline(args[i]);
         }
     }
 
     SongArray arr;
     rc = filter(db, &arr, args);
     if (rc != 0) {
-        fprintf(stderr, "筛选失败\n");
-        return 0;
+        return -1;
     }
 
     int active = 1;
@@ -275,14 +274,6 @@ int menu_filter_operation(pdb db) {
             break;
         case 1:
             print_song_array(&arr);
-            break;
-        case 2:
-            delete_songs(db, &arr);
-            break;
-        default:
-            printf("未知指令, 请重新输入\n");
         }
     }
-    destruct_song_array(&arr);
-    return 0;
 }

@@ -13,4 +13,6 @@ int menu_search(pdb db);
 
 int menu_filter(pdb db);
 
+int menu_filter_operation(pdb db);
+
 #endif

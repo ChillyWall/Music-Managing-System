@@ -4,6 +4,12 @@
 #include "types.h"
 #include <sqlite3.h>
 
+// 列名
+const char *columns[6] = {"title",    "album",    "singer",
+                          "lyricist", "composer", "arranger"};
+
+const char *columns_zh[6] = {"标题", "专辑", "歌手", "作词", "作曲", "编曲"};
+
 // 数据库指针
 typedef sqlite3 *pdb;
 typedef sqlite3_stmt *pstmt;
@@ -39,7 +45,7 @@ int search(pdb db, Song *song, const char *title, const char *album);
  * arranger的值 若为NULL则忽略该条件,
  * 返回0则筛选成功，其他值则筛选失败
  * 需要使用destruct_song_array 释放资源 */
-int filter(pdb db, SongArray *arr, const char **args);
+int filter(pdb db, SongArray *arr, const char *args[6]);
 
 /* 清空数据库中所有数据 */
 int clear_all(pdb db);

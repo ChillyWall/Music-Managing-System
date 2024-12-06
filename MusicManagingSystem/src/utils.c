@@ -8,10 +8,6 @@
 #include <types.h>
 #include <wchar.h>
 
-// 列名
-const char *columns[6] = {"title",    "album",    "singer",
-                          "lyricist", "composer", "arranger"};
-
 void _fill_song(pstmt stmt, Song *song);
 void _remove_newline(char *str);
 
@@ -19,7 +15,6 @@ int connect_db(pdb *ppdb) {
     // 连接数据库
     int rc = sqlite3_open("../data.db", ppdb);
     if (rc) {
-        fprintf(stderr, "Cannot open the database.\n");
         return -1;
     }
     return 0;
@@ -35,7 +30,6 @@ int create_tables(pdb db) {
                      "TEXT, lyricist TEXT, composer TEXT, arranger TEXT);",
                      NULL, NULL, &errmsg);
     if (rc != SQLITE_OK) {
-        fprintf(stderr, "Failed to create table songs: %s\n", errmsg);
         sqlite3_free(errmsg);
         return -1;
     }
@@ -63,7 +57,6 @@ int add_song(pdb db, Song *song) {
         sqlite3_finalize(stmt);
 
         if (rc != SQLITE_DONE) { // 插入失败
-            fprintf(stderr, "Error while inserting the song: %d\n", rc);
             return -2;
         }
         return 0;
@@ -85,13 +78,11 @@ int add_song(pdb db, Song *song) {
         sqlite3_finalize(stmt);
 
         if (rc != SQLITE_DONE) { // 更新失败
-            fprintf(stderr, "Error while inserting the song: %d\n", rc);
             return -3;
         }
 
         return 1;
     } else { // 搜索失败
-        fprintf(stderr, "Error while searching for the song: %d\n", rc);
         return -1;
     }
 }
@@ -107,7 +98,6 @@ int delete_song(pdb db, const char *title, const char *album) {
     int rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     if (rc != SQLITE_DONE) { // 删除失败
-        fprintf(stderr, "Failed to delete the song: %d\n", rc);
         return -1;
     }
     return 0;
@@ -121,8 +111,6 @@ int delete_songs(pdb db, SongArray *arr) {
         song = arr->data + i;
         rc = delete_song(db, song->title, song->album);
         if (rc != 0) {
-            fprintf(stderr, "The song %s - %s is not deleted", song->title,
-                    song->album);
             res = -1;
         }
     }
@@ -144,14 +132,13 @@ int search(pdb db, Song *song, const char *title, const char *album) {
     } else if (rc == SQLITE_DONE) { // 搜索成功但未找到结果
         rc = 1;
     } else { // 搜索失败
-        fprintf(stderr, "Failed to search for song: %d\n", rc);
         rc = -1;
     }
     sqlite3_finalize(stmt);
     return rc;
 }
 
-int filter(pdb db, SongArray *arr, const char **args) {
+int filter(pdb db, SongArray *arr, const char *args[6]) {
     // 条件对应列索引
     int i_cols[6];
     // 条件数量
@@ -193,7 +180,6 @@ int filter(pdb db, SongArray *arr, const char **args) {
 
     size_t count = 0;       // 符合条件的歌曲数量
     if (rc != SQLITE_ROW) { // 查询失败
-        fprintf(stderr, "Failed to count the number of songs.\n");
         sqlite3_finalize(stmt);
         return -1;
     } else { // 查询成功
@@ -225,7 +211,6 @@ int filter(pdb db, SongArray *arr, const char **args) {
         ++song;
     }
     if (rc != SQLITE_DONE) { // 非正常结束
-        fprintf(stderr, "Failed to search for songs.\n");
         free(arr->data);
         arr->data = NULL;
         arr->size = 0;
@@ -241,7 +226,6 @@ int clear_all(pdb db) {
     // 删除所有数据
     int rc = sqlite3_exec(db, "DELETE FROM songs;", NULL, NULL, NULL);
     if (rc != SQLITE_OK) {
-        fprintf(stderr, "Failed to clear all data.\n");
         return -1;
     }
     return 0;
@@ -250,7 +234,6 @@ int clear_all(pdb db) {
 int close_db(pdb db) {
     int rc = sqlite3_close(db);
     if (rc != SQLITE_OK) {
-        fprintf(stderr, "Failed to close the database.\n");
         return -1;
     }
     return 0;
@@ -260,7 +243,7 @@ int read_song(Song *song) {
     char *buf = NULL;
     size_t size;
     for (int i = 0; i < 6; i++) {
-        printf("Enter the %s: ", columns[i]);
+        printf("请输入%s: ", columns_zh[i]);
         getline(&buf, &size, stdin);
         _remove_newline(buf);
         switch (i) {
@@ -322,7 +305,7 @@ int print_song_info(Song *song) {
 }
 
 int print_song_array(SongArray *song_arr) {
-    printf("There're %zd songs in total.\n", song_arr->size);
+    printf("总计: %zd\n", song_arr->size);
     for (size_t i = 0; i < song_arr->size; ++i) {
         print_song_info(song_arr->data + i);
     }
