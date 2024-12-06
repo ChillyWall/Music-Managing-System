@@ -197,7 +197,7 @@ int menu_search(pdb db) {
             free(title);
             title = NULL;
             free(album);
-            title = NULL;
+            album = NULL;
             break;
         default:
             printf("未知指令,请重新输入\n");
