@@ -24,7 +24,8 @@ sudo apt install sqlite3 libsqlite3-dev
 
 ### Windows
 
-Windows下可以直接在[官网](https://www.sqlite.org/download.html)上下载编译好的二进制文件，其中包括`sqlite3.dll`和`sqlite3.def`文件, 可以使用 `dlltool`(MinGW64提供)或`lib`(MSVC提供)命令生成`sqlite3.lib`文件。
+Windows下可以直接在[官网](https://www.sqlite.org/download.html)上下载编译好的二进制文件，其中包括`sqlite3.dll`和`sqlite3.def`文件,
+可以使用 `dlltool`(MinGW64提供)或`lib`(MSVC提供)命令生成`sqlite3.lib`文件。
 
 ```powershell
 dlltool -D sqlite3.dll -d sqlite3.def -l sqlite3.lib
@@ -32,18 +33,37 @@ dlltool -D sqlite3.dll -d sqlite3.def -l sqlite3.lib
 lib /DEF:sqlite3.def /OUT:sqlite3.lib
 ```
 
+要构建项目还需要头文件`sqlite3.h`，改文件需要下载SQLite官网上的源文件，其中就包括该文件。
+
+之后配置环境变量`CMAKE_INCLUDE_PATH`和`CMAKE_LIBRARY_PATH`，将头文件和`.lib`文件的地址加入其中，
+再配置环境变量`PATH`，将`.dll`文件的目录加入其中。
+
+之后cmake一般便可以正常找到安装的SQLite3库了。
+
 ## 构建
 
 使用cmake构建该项目。目前在Linux下使用gcc或clang，在Windows下使用MinGW64, clang或MSVC均可正确构建。
 
+下面是构建示例，该命令将构建目录设置为build文件夹，安装目录为用户目录下的`Music Managing System`文件夹。
+
 ```bash
-cmake . -B build -G Ninja
+# 进行配置
+cmake . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="~/Music Managing System"
+# 进行构建
 cmake --build build
+```
+
+## 安装
+
+运行cmake的install命令，将程序安装到指定的目录。可移植性下面的命令。
+
+```bash
+cmake --install build
 ```
 
 ## 使用
 
-运行Main.exe即可开始使用，会在当前目录的父目录创建一个数据库文件data.db。
+运行Main.exe即可开始使用，会在运行目录的父目录创建一个SQLite3数据库文件`data.sqlite3`。
 
 Windows环境下，在cmd中使用需要设置utf-8编码以处理中文，可通过如下指令切换编码页：
 
@@ -60,4 +80,4 @@ powershell中需要设置输入输出编码均为utf-8。设置编码指令：
 
 Windows默认的Terminal通过以上指令可以正常使用，但在一些终端模拟器可能会仍会出现其它的问题，如alacritty在Windows下运行该程序会出现输入的中文无法正确被识别的问题。
 
-Linux环境下无需设置即可正常使用(Ubuntu20, 22)。
+Linux环境下无需设置即可正常使用(以Ubuntu20, 22为例)。

@@ -5,3 +5,10 @@ add_library(MusicManagingSystem SHARED ${SOURCES} MusicManagingSystem.def)
 target_include_directories(MusicManagingSystem PUBLIC include)
 target_include_directories(MusicManagingSystem PUBLIC ${SQLite3_INCLUDE_DIRS})
 target_link_libraries(MusicManagingSystem PRIVATE ${SQLite3_LIBRARIES})
+
+install(
+  TARGETS MusicManagingSystem
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+install(DIRECTORY include DESTINATION include)

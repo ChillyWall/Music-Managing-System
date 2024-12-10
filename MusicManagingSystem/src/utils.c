@@ -1,19 +1,16 @@
-#include <locale.h>
 #include <sqlite3.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>
 #include <utils.h>
-#include <wchar.h>
 
 void _fill_song(pstmt stmt, Song *song);
 void _remove_newline(char *str);
 
 int connect_db(pdb *ppdb) {
     // 连接数据库
-    int rc = sqlite3_open("../data.db", ppdb);
+    int rc = sqlite3_open("../data.sqlite3", ppdb);
     if (rc) {
         return -1;
     }
@@ -297,11 +294,31 @@ void destruct_song_array(SongArray *arr) {
 }
 
 int print_song_info(Song *song) {
-    printf(
-        "Title: %s, Album: %s, Singer: %s, Lyricist: %s, Composer: %s, "
-        "Arranger: %s\n",
-        song->title, song->album, song->singer, song->lyricist, song->composer,
-        song->arranger);
+    for (int i = 0; i < 6; ++i) {
+        char *buf;
+        switch (i) {
+        case 0:
+            buf = song->title;
+            break;
+        case 1:
+            buf = song->album;
+            break;
+        case 2:
+            buf = song->singer;
+            break;
+        case 3:
+            buf = song->lyricist;
+            break;
+        case 4:
+            buf = song->composer;
+            break;
+        case 5:
+            buf = song->arranger;
+            break;
+        }
+        printf("%s: %s\n", columns_zh[i], buf);
+    }
+    printf("\n");
     return 0;
 }
 
