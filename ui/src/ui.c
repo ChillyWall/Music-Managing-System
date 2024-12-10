@@ -1,8 +1,8 @@
-#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ui.h>
+#include <utils.h>
 
 void _remove_newline(char *str) {
     char *pos = strchr(str, '\n');
@@ -12,7 +12,7 @@ void _remove_newline(char *str) {
 }
 
 void _clear_stdin() {
-    while (getchar() != '\n') {}
+    while (getchar() != '\n' && getchar() != EOF) {}
 }
 
 int main() {
@@ -240,12 +240,13 @@ int menu_filter(pdb db) {
 
 int menu_filter_operation(pdb db) {
     int rc;
-    size_t len = 100;
+    size_t len;
+    size_t size = 100;
     char *args[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     for (int i = 0; i < 6; ++i) {
         printf("请输入%s: ", columns_zh[i]);
-        args[i] = malloc(len * sizeof(char));
-        fgets(args[i], len, stdin);
+        args[i] = malloc(size * sizeof(char));
+        fgets(args[i], size, stdin);
         _remove_newline(args[i]);
         len = strlen(args[i]);
         if (len == 0) {
@@ -255,7 +256,7 @@ int menu_filter_operation(pdb db) {
     }
 
     SongArray arr;
-    rc = filter(db, &arr, (const char**) args);
+    rc = filter(db, &arr, (const char **) args);
     if (rc != 0) {
         fprintf(stderr, "筛选失败\n");
         return 0;

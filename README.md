@@ -40,3 +40,24 @@ lib /DEF:sqlite3.def /OUT:sqlite3.lib
 cmake . -B build -G Ninja
 cmake --build build
 ```
+
+## 使用
+
+运行Main.exe即可开始使用，会在当前目录的父目录创建一个数据库文件data.db。
+
+Windows环境下，在cmd中使用需要设置utf-8编码以处理中文，可通过如下指令切换编码页：
+
+```bat
+chcp 65001
+```
+
+powershell中需要设置输入输出编码均为utf-8。设置编码指令：
+
+```ps1
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+[Console]::InputEncoding = [System.Text.UTF8Encoding]::new()
+```
+
+Windows默认的Terminal通过以上指令可以正常使用，但在一些终端模拟器可能会仍会出现其它的问题，如alacritty在Windows下运行该程序会出现输入的中文无法正确被识别的问题。
+
+Linux环境下无需设置即可正常使用(Ubuntu20, 22)。
