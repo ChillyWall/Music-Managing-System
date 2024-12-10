@@ -1,0 +1,16 @@
+LIBRARY MusicManagingSystem
+EXPORTS
+connect_db
+create_tables
+add_song
+delete_song
+delete_songs
+search
+filter
+clear_all
+close_db
+read_song
+destruct_song
+destruct_song_array
+print_song_info
+print_song_array
