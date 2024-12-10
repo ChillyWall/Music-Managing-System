@@ -1,4 +1,3 @@
-#include "utils.h"
 #include <locale.h>
 #include <sqlite3.h>
 #include <stdint.h>
@@ -6,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>
+#include <utils.h>
 #include <wchar.h>
 
 void _fill_song(pstmt stmt, Song *song);
