@@ -12,38 +12,31 @@ void test_create_tables(pdb db) {
 void test_add_and_delete_song(pdb db) {
     printf("Test: add_song\n");
     Song song = {
-         "孤勇者",
-         "孤勇者",
-         "陈奕迅",
-         "唐甜",
-         "钱雷",
-         "钱雷",
+        "孤勇者", "孤勇者", "陈奕迅", "唐甜", "钱雷", "钱雷",
     };
     clear_all(db);
 
+    SongArray songs;
+    char **args = {NULL, NULL, NULL, NULL, NULL, NULL};
     int rc = add_song(db, &song);
     printf("result: %d\n", rc);
-    printf("Press enter to continue.");
-    getchar();
+    filter(db, &songs, (const char **) args);
+    print_song_array(&songs);
+
     song.lyricist = "唐恬";
     rc = add_song(db, &song);
     printf("readd result: %d\n", rc);
     printf("Test: delete_song\n");
-    printf("Press enter to delete the song.");
-    getchar();
     rc = delete_song(db, "孤勇者", "孤勇者");
     printf("result: %d\n", rc);
+    filter(db, &songs, (const char **) args);
+    print_song_array(&songs);
 }
 
 void test_search(pdb db) {
     printf("Test: search\n");
     Song song = {
-         "孤勇者",
-         "孤勇者",
-         "陈奕迅",
-         "唐恬",
-         "钱雷",
-         "Qian Lei",
+        "孤勇者", "孤勇者", "陈奕迅", "唐恬", "钱雷", "Qian Lei",
     };
     create_tables(db);
     add_song(db, &song);
@@ -114,6 +107,9 @@ int main() {
         exit(-1);
     }
 
+    test_search(db);
+    test_search(db);
+    test_add_and_delete_song(db);
     test_filter(db);
 
     close_db(db);
