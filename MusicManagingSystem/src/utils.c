@@ -156,17 +156,17 @@ int filter(pdb db, SongArray *arr, const char *args[6]) {
         // 拼接条件语句
         char buf[20]; // 缓存区长度为20
         sprintf(buf, "WHERE %s = ?", columns[i_cols[0]]);
-        strncat(conditions, buf, 20);
+        strncat(conditions, buf, 19);
         for (int i = 1; i < cols; ++i) {
             sprintf(buf, "AND %s = ?", columns[i_cols[i]]);
-            strncat(conditions, buf, 20);
+            strncat(conditions, buf, 19);
         }
     }
 
     // 先查询符合条件的歌曲数量
     char sql1[150] = "SELECT COUNT(*) FROM songs ";
     // 拼接sql语句
-    strncat(sql1, conditions, 150);
+    strncat(sql1, conditions, 119);
     pstmt stmt = NULL;
     sqlite3_prepare_v2(db, sql1, -1, &stmt, NULL);
 
@@ -241,10 +241,11 @@ int close_db(pdb db) {
 
 int read_song(Song *song) {
     char *buf = NULL;
-    size_t size;
+    size_t size = 100;
     for (int i = 0; i < 6; i++) {
         printf("请输入%s: ", columns_zh[i]);
-        getline(&buf, &size, stdin);
+        buf = malloc(size * sizeof(char));
+        fgets(buf, size, stdin);
         _remove_newline(buf);
         switch (i) {
         case 0:

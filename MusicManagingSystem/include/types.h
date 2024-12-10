@@ -4,7 +4,6 @@
  * 用于声明类型或类型别名
  */
 
-#include <sqlite3.h>
 #include <stddef.h>
 #include <stdint.h>
 

@@ -112,7 +112,7 @@ int menu_add(pdb db) {
 int menu_delete(pdb db) {
     int active = 1;
     int rc;
-    size_t len;
+    size_t len = 100;
     char *title = NULL;
     char *album = NULL;
     while (active) {
@@ -130,11 +130,13 @@ int menu_delete(pdb db) {
             break;
         case 1:
             printf("输入标题: ");
-            getline(&title, &len, stdin);
+            title = malloc(len * sizeof(char));
+            fgets(title, len, stdin);
             _remove_newline(title);
 
             printf("输入专辑: ");
-            getline(&album, &len, stdin);
+            album = malloc(len * sizeof(char));
+            fgets(album, len, stdin);
             _remove_newline(album);
 
             rc = delete_song(db, title, album);
@@ -158,7 +160,7 @@ int menu_delete(pdb db) {
 int menu_search(pdb db) {
     int active = 1;
     int rc;
-    size_t len;
+    size_t len = 100;
     char *title = NULL;
     char *album = NULL;
     while (active) {
@@ -175,12 +177,14 @@ int menu_search(pdb db) {
             active = 0;
             break;
         case 1:
-            printf("请输入标题: ");
-            getline(&title, &len, stdin);
+            printf("输入标题: ");
+            title = malloc(len * sizeof(char));
+            fgets(title, len, stdin);
             _remove_newline(title);
 
-            printf("请输入专辑: ");
-            getline(&album, &len, stdin);
+            printf("输入专辑: ");
+            album = malloc(len * sizeof(char));
+            fgets(album, len, stdin);
             _remove_newline(album);
 
             Song song;
@@ -236,11 +240,12 @@ int menu_filter(pdb db) {
 
 int menu_filter_operation(pdb db) {
     int rc;
-    size_t len;
+    size_t len = 100;
     char *args[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     for (int i = 0; i < 6; ++i) {
         printf("请输入%s: ", columns_zh[i]);
-        getline(args + i, &len, stdin);
+        args[i] = malloc(len * sizeof(char));
+        fgets(args[i], len, stdin);
         _remove_newline(args[i]);
         len = strlen(args[i]);
         if (len == 0) {
@@ -250,7 +255,7 @@ int menu_filter_operation(pdb db) {
     }
 
     SongArray arr;
-    rc = filter(db, &arr, args);
+    rc = filter(db, &arr, (const char**) args);
     if (rc != 0) {
         fprintf(stderr, "筛选失败\n");
         return 0;

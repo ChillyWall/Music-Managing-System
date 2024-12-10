@@ -12,12 +12,12 @@ void test_create_tables(pdb db) {
 void test_add_and_delete_song(pdb db) {
     printf("Test: add_song\n");
     Song song = {
-        .title = "孤勇者",
-        .album = "孤勇者",
-        .singer = "陈奕迅",
-        .lyricist = "唐甜",
-        .composer = "钱雷",
-        .arranger = "钱雷",
+         "孤勇者",
+         "孤勇者",
+         "陈奕迅",
+         "唐甜",
+         "钱雷",
+         "钱雷",
     };
     clear_all(db);
 
@@ -38,12 +38,12 @@ void test_add_and_delete_song(pdb db) {
 void test_search(pdb db) {
     printf("Test: search\n");
     Song song = {
-        .title = "孤勇者",
-        .album = "孤勇者",
-        .singer = "陈奕迅",
-        .lyricist = "唐恬",
-        .composer = "钱雷",
-        .arranger = "Qian Lei",
+         "孤勇者",
+         "孤勇者",
+         "陈奕迅",
+         "唐恬",
+         "钱雷",
+         "Qian Lei",
     };
     create_tables(db);
     add_song(db, &song);
