@@ -1,4 +1,3 @@
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <utils.h>
@@ -17,7 +16,7 @@ void test_add_and_delete_song(pdb db) {
     clear_all(db);
 
     SongArray songs;
-    char **args = {NULL, NULL, NULL, NULL, NULL, NULL};
+    char *args[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     int rc = add_song(db, &song);
     printf("result: %d\n", rc);
     filter(db, &songs, (const char **) args);

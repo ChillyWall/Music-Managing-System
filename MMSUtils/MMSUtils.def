@@ -1,4 +1,4 @@
-LIBRARY MusicManagingSystem
+LIBRARY MMSUtils
 EXPORTS
 connect_db
 create_tables
