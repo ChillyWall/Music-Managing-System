@@ -284,6 +284,7 @@ int menu_filter_operation(pdb db) {
             break;
         case 2:
             delete_songs(db, &arr);
+            active = 0;
             break;
         default:
             printf("未知指令, 请重新输入\n");
