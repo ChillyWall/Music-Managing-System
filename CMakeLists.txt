@@ -13,6 +13,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 enable_testing()
 
-add_subdirectory(MusicManagingSystem)
+add_subdirectory(MMSUtils)
 add_subdirectory(tests)
 add_subdirectory(ui)

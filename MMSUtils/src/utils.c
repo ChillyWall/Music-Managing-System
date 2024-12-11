@@ -10,10 +10,21 @@ void _remove_newline(char *str);
 
 int connect_db(pdb *ppdb) {
     // 连接数据库
-    int rc = sqlite3_open("../data.sqlite3", ppdb);
+    char *home = getenv("HOME");
+    char *file;
+    if (home == NULL) {
+        file = "./data.sqlite3";
+    } else {
+        size_t size = strlen(home) + 14;
+        file = malloc(size * sizeof(char));
+        sprintf(file, "%s/data.sqlite3", home);
+    }
+    int rc = sqlite3_open(file, ppdb);
     if (rc) {
         return -1;
     }
+    free(file);
+    file = NULL;
     return 0;
 }
 
