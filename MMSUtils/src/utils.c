@@ -1,3 +1,9 @@
+#if defined(_WIN32) || defined(_WIN64)
+#define HOME_DIR "USERPROFILE"
+#else
+#define HOME_DIR "HOME"
+#endif
+
 #include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +16,7 @@ void _remove_newline(char *str);
 
 int connect_db(pdb *ppdb) {
     // 连接数据库
-    char *home = getenv("HOME");
+    char *home = getenv(HOME_DIR);
     char *file;
     if (home == NULL) {
         file = "./data.sqlite3";
