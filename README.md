@@ -74,7 +74,7 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path/to/MusicManagingSystem"
 
 ## 使用
 
-运行Main.exe即可开始使用，会在当前环境的HOME目录下创建一个SQLite3数据库文件`data.sqlite3`，
+运行Main.exe即可开始使用，会在当前环境的`HOME`(Unix、mac)或`USERPROFILE`(Windows)目录下创建一个SQLite3数据库文件`data.sqlite3`，
 若读取系统中HOME环境变量失败，则会在当前目录下创建。
 
 Windows的cmd和powershell等会使用系统默认的语言的编码（GBK）处理输入输出，而SQLite3数据库使用UTF-8，
