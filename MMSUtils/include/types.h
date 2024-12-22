@@ -18,8 +18,7 @@ typedef struct {
     char *arranger; // 编曲者
 } Song;
 
-/* 歌曲数组
- * 歌手不允许同名 */
+/* 歌曲数组 */
 typedef struct {
     Song *data;  // 数组
     size_t size; // 长度
