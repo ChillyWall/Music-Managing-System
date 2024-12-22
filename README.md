@@ -74,7 +74,7 @@ cmake --install build
 修改环境变量可以使用下面语句：
 
 ```bash
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path/to/MusicManagingSystem"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path/to/MusicManagingSystem/lib"
 ```
 
 ## 使用
