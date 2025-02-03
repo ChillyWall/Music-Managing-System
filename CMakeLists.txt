@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MusicManagingSystem LANGUAGES C)
+project(MusicManagementSystem LANGUAGES C)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
   if(CMAKE_C_COMPILER_ID MATCHES "MSVC")

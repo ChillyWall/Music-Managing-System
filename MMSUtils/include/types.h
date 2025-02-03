@@ -1,5 +1,5 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef MMS_TYPES_H
+#define MMS_TYPES_H
 /*
  * 用于声明类型或类型别名
  */

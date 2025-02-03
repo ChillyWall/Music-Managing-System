@@ -1,5 +1,5 @@
-add_executable(MusicManagingSystem src/ui.c)
-target_link_libraries(MusicManagingSystem PRIVATE MMSUtils)
-target_include_directories(MusicManagingSystem PUBLIC include)
+add_executable(MusicManagementSystem src/ui.c)
+target_link_libraries(MusicManagementSystem PRIVATE MMSUtils)
+target_include_directories(MusicManagementSystem PUBLIC include)
 
-install(TARGETS MusicManagingSystem RUNTIME DESTINATION bin)
+install(TARGETS MusicManagementSystem RUNTIME DESTINATION bin)

@@ -51,7 +51,7 @@ lib /DEF:sqlite3.def /OUT:sqlite3.lib
 # 将工作目录切换为该项目的根目录
 cd path/to/root
 # 进行配置
-cmake . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="~/MusicManagingSystem"
+cmake . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="~/MusicManagementSystem"
 # 进行构建
 cmake --build build
 ```
@@ -74,12 +74,12 @@ cmake --install build
 修改环境变量可以使用下面语句：
 
 ```bash
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path/to/MusicManagingSystem/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path/to/MusicManagementSystem/lib"
 ```
 
 ## 使用
 
-运行`MusicManagingSystem(.exe)`即可运行程序，会在当前环境的`HOME`(Unix、mac)或`USERPROFILE`(Windows)目录下创建一个SQLite3数据库文件`data.sqlite3`，
+运行`MusicManagementSystem(.exe)`即可运行程序，会在当前环境的`HOME`(Unix、mac)或`USERPROFILE`(Windows)目录下创建一个SQLite3数据库文件`data.sqlite3`，
 若读取系统中环境变量失败，则会在当前目录下创建。
 
 Windows的cmd和powershell等会使用系统默认语言的编码（中文系统为`GBK`）处理输入输出，而SQLite3数据库使用UTF-8，
